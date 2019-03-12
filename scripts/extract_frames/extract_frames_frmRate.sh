@@ -10,11 +10,5 @@ then
   exit $E_BADARGS
 fi
 
-NAME=${1%.*}
-FRAMES=$2
-BNAME=$3
-#echo $BNAME
-#mkdir -m 755 $BNAME
-#ffmpeg -y -i $1 -r $FRAMES $3_%4d.jpg
 
-ffmpeg -i $1 -qscale:v 2 -r $FRAMES  $3_%4d.jpg
+ffmpeg -i '$1' -vf scale=320:320 -qscale:v 2 -r $FRAMES  '$3_%4d.jpg'
