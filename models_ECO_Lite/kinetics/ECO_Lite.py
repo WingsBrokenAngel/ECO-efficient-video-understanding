@@ -20,6 +20,11 @@ class EcoModel():
 
     def construct_model(self, input_x, input_y):
         ct = self.cnn_trainable
+        x = self.inception_part(input_x)
+
+
+
+    def inception_part(self, input_x, ct)
         self.conv1_7x7_s2 = Conv2D(kernel_size=(7,7), filters=64, strides=2, padding='same', 
                             data_format='channels_first', trainable=ct, name='conv1_7x7_s2')
 
@@ -59,6 +64,7 @@ class EcoModel():
 
         x = self.inception_block_3a(x, ct)
         x = self.inception_block_3b(x, ct)
+        return x
 
 
 
@@ -197,4 +203,7 @@ class EcoModel():
         x = tf.nn.relu(x, name='inception_3c_relu_double_3x3_1_inp')
         x = tf.reshape(x, (-1, self.batch_size, 96, 28, 28), name='r2Dto3D')
         x = tf.transpose(x, [0, 2, 1, 3, 4])
+        
+
+    def resnet_3d_part(self, x, ct):
         
