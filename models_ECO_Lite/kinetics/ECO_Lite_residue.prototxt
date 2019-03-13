@@ -1,0 +1,94 @@
+######################################### Global pool ############################################################
+layer {
+  name: "global_pool"
+  bottom: "res5b_bn"
+  top: "global_pool"
+  type: "Pooling"
+  pooling_param {
+    pool: AVE
+    kernel_size: [4, 7, 7]
+    stride: [1, 1, 1]
+  }
+}
+layer {
+  name: "global_pool_reshape"
+  type: "Reshape"
+  bottom: "global_pool"
+  top: "global_pool_reshape"
+  reshape_param { shape { dim: -1 dim: 512 } }
+}
+layer {
+  name: "dropout"
+  type: "Dropout"
+  bottom: "global_pool_reshape"
+  top: "global_pool_reshape"
+  dropout_param { dropout_ratio: 0.3 }
+}
+########################################## FC #######################################
+layer {
+  name: "fc8"
+  type: "InnerProduct"
+  bottom: "global_pool_reshape"
+  top: "fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  include {
+    phase: TRAIN
+  }
+  top: "loss"
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "top1"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "top1"
+  accuracy_param { top_k : 1}
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "top5"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label"
+  top: "top5"
+  accuracy_param { top_k: 5 }
+  include {
+    phase: TEST
+  }
+}
+
