@@ -56,7 +56,7 @@ def load_one_video(path2video, num_frm, sample_size, is_train=True):
         img = (img - 0.5) * 2.0
         img = np.clip(img, -1., 1.)
         images.append(img)
-    images = np.stack(images, axis=0)
+    images = np.concatenate(images, axis=0)
     return images
 
 
