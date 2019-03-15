@@ -41,13 +41,13 @@ class EcoModel():
         print(x)
         x = Dropout(0.3, name='dropout')(x)
         self.fc8 = Dense(400, trainable=ct, name='fc8')
-        x = self.fc8(x)
-        print(x)
+        self.fc8_output = self.fc8(x)
+        print(self.fc8_output)
         self.loss = sparse_softmax_cross_entropy_with_logits(logits=x, labels=self.input_y)
 
-        self.top1_acc = in_top_k(predictions=x, targets=self.input_y, k=1)
+        self.top1_acc = in_top_k(predictions=self.fc8_output, targets=self.input_y, k=1)
         self.top1_acc = tf.reduce_mean(tf.cast(self.top1_acc, tf.float32), name='top1_accuracy')
-        self.top5_acc = in_top_k(predictions=x, targets=self.input_y, k=5)
+        self.top5_acc = in_top_k(predictions=self.fc8_output, targets=self.input_y, k=5)
         self.top5_acc = tf.reduce_mean(tf.cast(self.top5_acc, tf.float32), name='top5_accuracy')
 
 
@@ -74,8 +74,8 @@ class EcoModel():
         self.pool2_3x3_s2 = MaxPooling2D(pool_size=3, strides=2, padding='same', 
                                          data_format=self.DATA_FORMAT, name='pool2_3x3_s2')
 
-        x = tf.reshape(input_x, (-1, 3, 224, 224))
-        x = self.conv1_7x7_s2(x)
+        # x = tf.reshape(input_x, (-1, 3, 224, 224))
+        x = self.conv1_7x7_s2(input_x)
 
         x = self.conv1_7x7_s2_bn(x)
         x = tf.nn.relu(x, name='conv1_relu_7x7_inp')
@@ -93,13 +93,13 @@ class EcoModel():
         x = self.pool2_3x3_s2(x)
         print(x)
 
-        x = self.inception_block_3a(x, ct)
-        print(x)
-        x = self.inception_block_3b(x, ct)
-        print(x)
-        x = self.inception_block_3c(x, ct)
-        print(x)
-        return x
+        self.incep_3a = self.inception_block_3a(x, ct)
+        print(self.incep_3a)
+        self.incep_3b = self.inception_block_3b(self.incep_3a, ct)
+        print(self.incep_3b)
+        self.incep_3c = self.inception_block_3c(self.incep_3b, ct)
+        print(self.incep_3c)
+        return self.incep_3c
 
 
 
@@ -242,13 +242,13 @@ class EcoModel():
         return x
 
     def resnet_3d_part(self, x, ct):
-        x = self.res3_block(x, ct)
-        print(x)
-        x = self.res4_block(x, ct)
-        print(x)
-        x = self.res5_block(x, ct)
-        print(x)
-        return x
+        self.res3_output = self.res3_block(x, ct)
+        print(self.res3_output)
+        self.res4_output = self.res4_block(self.res3_output, ct)
+        print(self.res4_output)
+        self.res5_output = self.res5_block(self.res4_output, ct)
+        print(self.res5_output)
+        return self.res5_output
 
 
     def res3_block(self, x, ct):
