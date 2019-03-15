@@ -12,7 +12,7 @@ from pprint import pprint
 import pickle
 
 
-batch_size = 16
+batch_size = 8
 cnn_trainable = True
 path2train = '/home/chenhaoran/ECO-efficient-video-understanding/Kinetics400_rgb_train.txt'
 train_example_num = 229435
@@ -35,7 +35,7 @@ def train_model_global(train_video_path_file):
         p = mp.Process(target=load_video, args=(path2video_queue, video_queue, frm_num, True, idx))
         plist.append(p)
 
-    model = EcoModel(cnn_trainable, batch_size)
+    model = EcoModel(cnn_trainable, frm_num)
     p = mp.Process(target=train_model_process, args=(model, video_queue))
     plist.append(p)
 
