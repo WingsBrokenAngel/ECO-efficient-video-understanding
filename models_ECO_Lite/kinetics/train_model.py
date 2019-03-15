@@ -12,7 +12,7 @@ import multiprocessing as mp
 
 batch_size = 16
 cnn_trainable = False
-path2train = '/home/chenhaoran/Kinetics400_rgb_train.txt'
+path2train = '/home/chenhaoran/ECO-efficient-video-understanding/Kinetics400_rgb_train.txt'
 train_example_num = 229435
 epoch = 10
 frm_num = 32
