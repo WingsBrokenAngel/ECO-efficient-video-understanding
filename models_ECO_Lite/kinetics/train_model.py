@@ -12,7 +12,7 @@ from pprint import pprint
 
 
 batch_size = 16
-cnn_trainable = False
+cnn_trainable = True
 path2train = '/home/chenhaoran/ECO-efficient-video-understanding/Kinetics400_rgb_train.txt'
 train_example_num = 229435
 epoch = 10
