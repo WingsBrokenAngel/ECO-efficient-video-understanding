@@ -34,7 +34,7 @@ class EcoModel():
         ct = self.cnn_trainable
         x = self.inception_part(input_x, ct)
         x = self.resnet_3d_part(x, ct)
-        x = AveragePooling3D(pool_size=(4, 7, 7), strides=(1, 1, 1), padding='valid', 
+        x = AveragePooling3D(pool_size=(self.frm_num//4, 7, 7), strides=(1, 1, 1), padding='valid', 
                              data_format=self.DATA_FORMAT, name='global_pool')(x)
         print(x)
         x = tf.reshape(x, shape=(-1, 512))
