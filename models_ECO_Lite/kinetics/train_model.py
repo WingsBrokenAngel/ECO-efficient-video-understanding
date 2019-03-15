@@ -101,13 +101,14 @@ def train_model_process(model, video_queue):
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True  
         saver = tf.train.Saver()
+        init_op = tf.global_variables_initializer()
     with tf.Session(graph=model.graph, config=config) as sess:
         # 加载数据
         incep = pickle.load(open("/home/chenhaoran/inception_weights_py3.pkl" ,"rb"))
         res = pickle.load(open("/home/chenhaoran/res3dnet_weights_py3.pkl", "rb"))
-        model.init_weights(res, incep, sess)
-        sess.run(model.init_op)
-        model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt')
+        sess.run(init_op)
+        model.init_weights(res, incep, sess, saver)
+        model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt', saver)
         full_iters = train_example_num // batch_size
         if train_example_num % batch_size:
             residue_examples = train_example_num % batch_size
