@@ -36,28 +36,23 @@ def load_one_video(path2video, num_frm, sample_size, is_train=True):
     '''
     frm_idx = np.random.choice(np.arange(num_frm), size=sample_size)
     frm_idx.sort()
-    pic_names = os.listdir(path2video)
-    images = []
-    for idx in frm_idx:
-        path2img = os.path.join(path2video, pic_names[idx])
-        img = cv2.imread(path2img)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (256, 256), interpolation=cv2.INTER_CUBIC)
-        img = img.astype(np.float32) / 255.
-
+    vid = np.load(os.path.join(path2video, 'imgs.npy'))
+    images = vid[frm_idx].astype(np.float32) / 255.
+    processed = []
+    for idx in range(sample_size):
         if is_train:
             if random.randint(0, 1):
-                img = cv2.flip(img, 1)
-            x_start, y_start = random.randint(0, 32), random.randint(0, 32)
-            img = img[x_start:x_start+224, y_start:y_start+224]
+                images[idx] = cv2.flip(images[idx], 1)
+            x_start, y_start = random.randint(0, 96), random.randint(0, 96)
+            img = images[idx, x_start:x_start+224, y_start:y_start+224]
             delta = np.random.randn(224, 224, 3).astype(np.float32) * 0.05
             img += delta
         img = np.transpose(img, [2, 0, 1])
         img = (img - 0.5) * 2.0
         img = np.clip(img, -1., 1.)
-        images.append(img)
-    images = np.stack(images, axis=0)
-    return images
+        processed.append(img)
+    processed = np.stack(processed, axis=0)
+    return processed
 
 
 def load_video(path2video_queue, video_queue, sample_size, is_train=True, idx=0):
