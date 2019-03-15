@@ -34,9 +34,8 @@ def train_model_global(train_video_path_file):
         plist.append(p)
 
     model = EcoModel(cnn_trainable, batch_size)
-    with model.graph.as_default():
-        p = mp.Process(target=train_model_process, args=(model, video_queue))
-        plist.append(p)
+    p = mp.Process(target=train_model_process, args=(model, video_queue))
+    plist.append(p)
 
     for p in plist:
         p.start()
@@ -47,58 +46,59 @@ def train_model_global(train_video_path_file):
 
 def train_model_process(model, video_queue):
     # Loss
-    with tf.variable_scope('eco', reuse=tf.AUTO_REUSE):
-        kernel_list = []
-        kernel_list += [tf.get_variable('conv1_7x7_s2/kernel', (7, 7, 3, 64))]
-        kernel_list += [tf.get_variable('conv2_3x3_reduce/kernel', (1, 1, 64, 64))]
-        kernel_list += [tf.get_variable('conv2_3x3/kernel', (3, 3, 64, 192))]
-        kernel_list += [tf.get_variable('inception_3a_1x1/kernel', (1, 1, 192, 64))]
-        kernel_list += [tf.get_variable('inception_3a_3x3_reduce/kernel', (1, 1, 192, 64))]
-        kernel_list += [tf.get_variable('inception_3a_3x3/kernel', (3, 3, 64, 64))]
-        kernel_list += [tf.get_variable('inception_3a_double_3x3_reduce/kernel', (1, 1, 192, 64))]
-        kernel_list += [tf.get_variable('inception_3a_double_3x3_1/kernel', (3, 3, 64, 96))]
-        kernel_list += [tf.get_variable('inception_3a_double_3x3_2/kernel', (3, 3, 96, 96))]
-        kernel_list += [tf.get_variable('inception_3a_pool_proj/kernel', (1, 1, 192, 32))]
-        kernel_list += [tf.get_variable('inception_3b_1x1/kernel', (1, 1, 256, 64))]
-        kernel_list += [tf.get_variable('inception_3b_3x3_reduce/kernel', (1, 1, 256, 64))]
-        kernel_list += [tf.get_variable('inception_3b_3x3/kernel', (3, 3, 64, 96))]
-        kernel_list += [tf.get_variable('inception_3b_double_3x3_reduce/kernel', (1, 1, 256, 64))]
-        kernel_list += [tf.get_variable('inception_3b_double_3x3_1/kernel', (3, 3, 64, 96))]
-        kernel_list += [tf.get_variable('inception_3b_double_3x3_2/kernel', (3, 3, 96, 96))]
-        kernel_list += [tf.get_variable('inception_3b_pool_proj/kernel', (1, 1, 256, 64))]
-        kernel_list += [tf.get_variable('inception_3c_double_3x3_reduce/kernel', (1, 1, 320, 64))]
-        kernel_list += [tf.get_variable('inception_3c_double_3x3_1/kernel', (3, 3, 64, 96))]
-        kernel_list += [tf.get_variable('res3a_2/kernel', (3, 3, 3, 96, 128))]
-        kernel_list += [tf.get_variable('res3b_1/kernel', (3, 3, 3, 128, 128))]
-        kernel_list += [tf.get_variable('res3b_2/kernel', (3, 3, 3, 128, 128))]
-        kernel_list += [tf.get_variable('res4a_1/kernel', (3, 3, 3, 128, 256))]
-        kernel_list += [tf.get_variable('res4a_2/kernel', (3, 3, 3, 256, 256))]
-        kernel_list += [tf.get_variable('res4a_down/kernel', (3, 3, 3, 128, 256))]
-        kernel_list += [tf.get_variable('res4b_1/kernel', (3, 3, 3, 256, 256))]
-        kernel_list += [tf.get_variable('res4b_2/kernel', (3, 3, 3, 256, 256))]
-        kernel_list += [tf.get_variable('res5a_1/kernel', (3, 3, 3, 256, 512))]
-        kernel_list += [tf.get_variable('res5a_2/kernel', (3, 3, 3, 512, 512))]
-        kernel_list += [tf.get_variable('res5a_down/kernel', (3, 3, 3, 256, 512))]
-        kernel_list += [tf.get_variable('res5b_1/kernel', (3, 3, 3, 512, 512))]
-        kernel_list += [tf.get_variable('res5b_2/kernel', (3, 3, 3, 512, 512))]
-        kernel_list += [tf.get_variable('fc8/kernel', (512, 400))]
-    l2_loss_list = []
-    for k in kernel_list:
-        l2_loss_list.append(tf.nn.l2_loss(k))
-    l2_loss = tf.reduce_sum(l2_loss_list)
-    loss = model.loss + beta * l2_loss
-    # Optimizer
-    global_step = tf.Variable(0)
-    optimizer = tf.train.AdamOptimizer(learning_rate, global_step)
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-    with tf.control_dependencies(update_ops):
-        grads_vars = optimizer.compute_gradients(loss)
-        grads_vars = [(tf.clip_by_norm(gv[0], gradient_bound), gv[1]) for gv in grads_vars]
-        train_op = optimizer.apply_gradients(grads_vars)
-    # Configuration
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True  
-    saver = tf.train.Saver()
+    with model.graph.as_default():
+        with tf.variable_scope('eco', reuse=tf.AUTO_REUSE):
+            kernel_list = []
+            kernel_list += [tf.get_variable('conv1_7x7_s2/kernel', (7, 7, 3, 64))]
+            kernel_list += [tf.get_variable('conv2_3x3_reduce/kernel', (1, 1, 64, 64))]
+            kernel_list += [tf.get_variable('conv2_3x3/kernel', (3, 3, 64, 192))]
+            kernel_list += [tf.get_variable('inception_3a_1x1/kernel', (1, 1, 192, 64))]
+            kernel_list += [tf.get_variable('inception_3a_3x3_reduce/kernel', (1, 1, 192, 64))]
+            kernel_list += [tf.get_variable('inception_3a_3x3/kernel', (3, 3, 64, 64))]
+            kernel_list += [tf.get_variable('inception_3a_double_3x3_reduce/kernel', (1, 1, 192, 64))]
+            kernel_list += [tf.get_variable('inception_3a_double_3x3_1/kernel', (3, 3, 64, 96))]
+            kernel_list += [tf.get_variable('inception_3a_double_3x3_2/kernel', (3, 3, 96, 96))]
+            kernel_list += [tf.get_variable('inception_3a_pool_proj/kernel', (1, 1, 192, 32))]
+            kernel_list += [tf.get_variable('inception_3b_1x1/kernel', (1, 1, 256, 64))]
+            kernel_list += [tf.get_variable('inception_3b_3x3_reduce/kernel', (1, 1, 256, 64))]
+            kernel_list += [tf.get_variable('inception_3b_3x3/kernel', (3, 3, 64, 96))]
+            kernel_list += [tf.get_variable('inception_3b_double_3x3_reduce/kernel', (1, 1, 256, 64))]
+            kernel_list += [tf.get_variable('inception_3b_double_3x3_1/kernel', (3, 3, 64, 96))]
+            kernel_list += [tf.get_variable('inception_3b_double_3x3_2/kernel', (3, 3, 96, 96))]
+            kernel_list += [tf.get_variable('inception_3b_pool_proj/kernel', (1, 1, 256, 64))]
+            kernel_list += [tf.get_variable('inception_3c_double_3x3_reduce/kernel', (1, 1, 320, 64))]
+            kernel_list += [tf.get_variable('inception_3c_double_3x3_1/kernel', (3, 3, 64, 96))]
+            kernel_list += [tf.get_variable('res3a_2/kernel', (3, 3, 3, 96, 128))]
+            kernel_list += [tf.get_variable('res3b_1/kernel', (3, 3, 3, 128, 128))]
+            kernel_list += [tf.get_variable('res3b_2/kernel', (3, 3, 3, 128, 128))]
+            kernel_list += [tf.get_variable('res4a_1/kernel', (3, 3, 3, 128, 256))]
+            kernel_list += [tf.get_variable('res4a_2/kernel', (3, 3, 3, 256, 256))]
+            kernel_list += [tf.get_variable('res4a_down/kernel', (3, 3, 3, 128, 256))]
+            kernel_list += [tf.get_variable('res4b_1/kernel', (3, 3, 3, 256, 256))]
+            kernel_list += [tf.get_variable('res4b_2/kernel', (3, 3, 3, 256, 256))]
+            kernel_list += [tf.get_variable('res5a_1/kernel', (3, 3, 3, 256, 512))]
+            kernel_list += [tf.get_variable('res5a_2/kernel', (3, 3, 3, 512, 512))]
+            kernel_list += [tf.get_variable('res5a_down/kernel', (3, 3, 3, 256, 512))]
+            kernel_list += [tf.get_variable('res5b_1/kernel', (3, 3, 3, 512, 512))]
+            kernel_list += [tf.get_variable('res5b_2/kernel', (3, 3, 3, 512, 512))]
+            kernel_list += [tf.get_variable('fc8/kernel', (512, 400))]
+        l2_loss_list = []
+        for k in kernel_list:
+            l2_loss_list.append(tf.nn.l2_loss(k))
+        l2_loss = tf.reduce_sum(l2_loss_list)
+        loss = model.loss + beta * l2_loss
+        # Optimizer
+        global_step = tf.Variable(0)
+        optimizer = tf.train.AdamOptimizer(learning_rate, global_step)
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            grads_vars = optimizer.compute_gradients(loss)
+            grads_vars = [(tf.clip_by_norm(gv[0], gradient_bound), gv[1]) for gv in grads_vars]
+            train_op = optimizer.apply_gradients(grads_vars)
+        # Configuration
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True  
+        saver = tf.train.Saver()
     with tf.Session(graph=model.graph, config=config) as sess:
         # 加载数据
         sess.run(model.init_op)
