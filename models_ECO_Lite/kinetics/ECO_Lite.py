@@ -52,9 +52,11 @@ class EcoModel():
     def inception_part(self, input_x, ct):
         self.conv1_7x7_s2 = Conv2D(kernel_size=(7,7), filters=64, strides=2, padding='same', 
                             data_format='channels_first', trainable=ct, name='conv1_7x7_s2')
-
+        w1 = self.conv1_7x7_s2.get_weights()
+        print('len:', len(w1), 'shape1:', w1[0].shape, 'shape2:', w1[1].shape)
         self.conv1_7x7_s2_bn = BatchNormalization(axis=1, trainable=ct, name='conv1_7x7_s2_bn')
-
+        w2 = self.conv1_7x7_s2_bn.get_weights()
+        print('len:', len(w2), 'shape1:', w2[0].shape, 'sahpe2:', w2[1].shape)
         self.pool1_3x3_s2 = MaxPooling2D(pool_size=3, strides=2, padding='same', 
                                   data_format='channels_first', name='pool1_3x3_s2')
         
