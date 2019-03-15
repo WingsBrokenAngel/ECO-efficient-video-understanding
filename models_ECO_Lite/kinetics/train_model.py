@@ -9,6 +9,7 @@ from dataload import load_video, load_video_path
 from ECO_Lite import EcoModel
 import multiprocessing as mp
 from pprint import pprint
+import pickle
 
 
 batch_size = 16
