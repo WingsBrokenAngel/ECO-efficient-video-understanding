@@ -43,14 +43,14 @@ def load_one_video(path2video, num_frm, sample_size, is_train=True):
         img = cv2.imread(path2img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (256, 256), interpolation=cv2.INTER_CUBIC)
-        img = img / 255.
+        img = img.astype(np.float32) / 255.
 
         if is_train:
             if random.randint(0, 1):
                 img = cv2.flip(img, 1)
             x_start, y_start = random.randint(0, 32), random.randint(0, 32)
             img = img[x_start:x_start+224, y_start:y_start+224]
-            delta = np.random.randn(224, 224, 3) * 0.05
+            delta = np.random.randn(224, 224, 3).astype(np.float32) * 0.05
             img += delta
         img = np.transpose(img, [2, 0, 1])
         img = (img - 0.5) * 2.0
