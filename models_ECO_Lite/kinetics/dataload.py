@@ -22,13 +22,12 @@ class ImgArgument():
             self.output = tf.clip_by_value(img, 0, 1.)
 
 
-def load_one_video(path2video, num_frm, sample_size, sess, img_arg, is_train=True):
+def load_one_video(path2video, num_frm, sample_size, is_train=True):
     '''
     Args:
     path2video: str, the absolute path to a video
     num_frm: int, the number of frames of that video
     sample_size: int, the number to sample
-    sess: tf.Session, the session to run the data argumentation
     is_train: bool, determine whether images should be argumented
 
     Return:
@@ -47,9 +46,15 @@ def load_one_video(path2video, num_frm, sample_size, sess, img_arg, is_train=Tru
         img = img / 255.
 
         if is_train:
-            img = sess.run(img_arg.output, feed_dict={img_arg.img: img})
+            if random.randint(0, 1):
+                img = cv2.flip(img, 1)
+            x_start, y_start = random.randint(0, 32), random.randint(0, 32)
+            img = img[x_start:x_start+224, y_start:y_start+224]
+            delta = np.random.randn(224, 224, 3) * 0.05
+            img += delta
         img = np.transpose(img, [2, 0, 1])
-        img = (img - 0.5) * 2.0 
+        img = (img - 0.5) * 2.0
+        img = np.clip(img, -1., 1.)
         images.append(img)
     images = np.stack(images, axis=0)
     return images
@@ -64,10 +69,7 @@ def load_video(path2video_queue, video_queue, sample_size, is_train=True, idx=0)
     is_train: bool, whether in training
     idx: int, the process index
     '''
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    img_arg = ImgArgument()
-    sess = tf.Session(config=config, graph=img_arg.graph)
+
     cnt = 0
     while True:
         try:
@@ -77,9 +79,8 @@ def load_video(path2video_queue, video_queue, sample_size, is_train=True, idx=0)
             print('Process %d has finished. %d videos have been preprocessed.' % (idx, cnt))
             break
 
-        images = load_one_video(path2video, num_frm, sample_size, sess, img_arg, is_train=is_train)
+        images = load_one_video(path2video, num_frm, sample_size, is_train=is_train)
         video_queue.put([images, label])
-    sess.close()
 
 
 def load_video_path(fpath, path2video_queue, epoch=1):
