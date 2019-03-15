@@ -23,6 +23,8 @@ for path in train_full_path:
     vid_full_paths = [os.path.join(path, vid_name) for vid_name in vid_names]
     for vid_path in vid_full_paths:
         img_names = os.listdir(vid_path)
+        if len(img_names) < 12:
+            continue
         imgs = []
         for img_name in img_names:
             img_full_path = os.path.join(vid_path, img_name)
@@ -40,6 +42,8 @@ for path in val_full_path:
     vid_full_paths = [os.path.join(path, vid_name) for vid_name in vid_names]
     for vid_path in vid_full_paths:
         img_names = os.listdir(vid_path)
+        if len(img_names) < 12:
+            continue
         imgs = []
         for img_name in img_names:
             img_full_path = os.path.join(vid_path, img_name)
