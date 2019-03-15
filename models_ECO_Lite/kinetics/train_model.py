@@ -102,6 +102,9 @@ def train_model_process(model, video_queue):
         saver = tf.train.Saver()
     with tf.Session(graph=model.graph, config=config) as sess:
         # 加载数据
+        incep = pickle.load(open("/home/chenhaoran/inception_weights_py3.pkl" ,"rb"))
+        res = pickle.load(open("/home/chenhaoran/res3dnet_weights_py3.pkl", "rb"))
+        model.init_weights(res, incep, sess)
         sess.run(model.init_op)
         model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt')
         full_iters = train_example_num // batch_size
