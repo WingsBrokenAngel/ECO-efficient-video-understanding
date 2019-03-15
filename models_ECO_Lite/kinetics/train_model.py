@@ -94,7 +94,7 @@ def train_model_process(model, video_queue):
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             grads_vars = optimizer.compute_gradients(loss, tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
-            # pprint(grads_vars)
+            pprint(grads_vars)
             grads_vars = [(tf.clip_by_norm(gv[0], gradient_bound), gv[1]) for gv in grads_vars]
             train_op = optimizer.apply_gradients(grads_vars)
         # Configuration
