@@ -479,7 +479,7 @@ class EcoModel():
             w = self.res3a_bn.get_weights()
             print('res3a_bn equal: ', np.all(w[0] == resnet['res3a_bn'][0]))   
 
-    def load_save(self, path2save, sess):
+    def load_save(self, sess, path2save):
         saver = tf.train.Saver()
         saver.restore(sess, path2save)
         print('The model has been restored.')
