@@ -8,6 +8,7 @@ import os
 from dataload import load_video, load_video_path
 from ECO_Lite import EcoModel
 import multiprocessing as mp
+from pprint import pprint
 
 
 batch_size = 16
@@ -93,6 +94,7 @@ def train_model_process(model, video_queue):
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
             grads_vars = optimizer.compute_gradients(loss)
+            pprint(grads_vars)
             grads_vars = [(tf.clip_by_norm(gv[0], gradient_bound), gv[1]) for gv in grads_vars]
             train_op = optimizer.apply_gradients(grads_vars)
         # Configuration
