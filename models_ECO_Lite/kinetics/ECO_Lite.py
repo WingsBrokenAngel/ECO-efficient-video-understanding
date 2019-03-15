@@ -88,10 +88,14 @@ class EcoModel():
         x = tf.nn.relu(x, name='conv2_relu_3x3_inp')
 
         x = self.pool2_3x3_s2(x)
+        print(x)
 
         x = self.inception_block_3a(x, ct)
+        print(x)
         x = self.inception_block_3b(x, ct)
+        print(x)
         x = self.inception_block_3c(x, ct)
+        print(x)
         return x
 
 
@@ -236,8 +240,11 @@ class EcoModel():
 
     def resnet_3d_part(self, x, ct):
         x = self.res3_block(x, ct)
+        print(x)
         x = self.res4_block(x, ct)
+        print(x)
         x = self.res5_block(x, ct)
+        print(x)
         return x
 
 
