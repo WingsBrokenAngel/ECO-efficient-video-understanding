@@ -18,29 +18,34 @@ val_classes = os.listdir(val_frm_full_path)
 val_full_path = [os.path.join(val_frm_full_path, v) for v in val_classes]
 
 for path in train_full_path:
-    img_names = os.listdir(path)
-    img_full_paths = [os.path.join(path, img_name) for img_name in img_names]
-    imgs = []
-    for img_path in img_full_paths:
-        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        imgs.append(img)
+    vid_names = os.listdir(path)
+    vid_full_paths = [os.path.join(path, vid_name) for vid_name in vid_names]
+    for vid_path in vid_full_paths:
+        img_names = os.listdir(vid_path)
+        imgs = []
+        for img_name in img_names:
+            img_full_path = os.path.join(vid_path, img_name)
+            img = cv2.imread(img_full_path, cv2.IMREAD_COLOR)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            imgs.append(img)
 
-    imgs = np.stack(imgs, axis=0)
-    print(path, imgs.shape, imgs.dtype)
-    np.save(os.path.join(path, 'imgs'), imgs)
+        imgs = np.stack(imgs, axis=0)
+        print(path, imgs.shape, imgs.dtype)
+        np.save(os.path.join(vid_path, 'imgs'), imgs)
 
 
 for path in val_full_path:
-    img_names = os.listdir(path)
-    img_full_paths = [os.path.join(path, img_name) for img_name in img_names]
-    imgs = []
+    vid_names = os.listdir(path)
+    vid_full_paths = [os.path.join(path, vid_name) for vid_name in vid_names]
+    for vid_path in vid_full_paths:
+        img_names = os.listdir(vid_path)
+        imgs = []
+        for img_name in img_names:
+            img_full_path = os.path.join(vid_path, img_name)
+            img = cv2.imread(img_full_path, cv2.IMREAD_COLOR)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            imgs.append(img)
 
-    for img_path in img_full_paths:
-        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        imgs.append(img)
-
-    imgs = np.stack(imgs, axis=0)
-    print(path, imgs.shape, imgs.dtype)
-    np.save(os.path.join(path, 'imgs'), imgs)
+        imgs = np.stack(imgs, axis=0)
+        print(path, imgs.shape, imgs.dtype)
+        np.save(os.path.join(vid_path, 'imgs'), imgs)
