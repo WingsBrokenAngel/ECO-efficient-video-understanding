@@ -18,10 +18,11 @@ import pickle
 
 
 class EcoModel():
-    def __init__(self, cnn_trainable=False, frm_num=16):
+    def __init__(self, data_format, cnn_trainable=False, frm_num=16):
         self.cnn_trainable = cnn_trainable
         self.graph = tf.Graph()
         self.frm_num = frm_num
+        self.DATA_FORMAT = data_format
         with self.graph.as_default():
             with tf.variable_scope('eco', reuse=tf.AUTO_REUSE):
                 self.input_x = tf.placeholder(dtype=tf.float32, shape=(None, 3, 224, 224), name='input_x')
@@ -34,7 +35,7 @@ class EcoModel():
         x = self.inception_part(input_x, ct)
         x = self.resnet_3d_part(x, ct)
         x = AveragePooling3D(pool_size=(4, 7, 7), strides=(1, 1, 1), padding='valid', 
-                             data_format='channels_first', name='global_pool')(x)
+                             data_format=self.DATA_FORMAT, name='global_pool')(x)
         print(x)
         x = tf.reshape(x, shape=(-1, 512))
         print(x)
@@ -53,25 +54,25 @@ class EcoModel():
 
     def inception_part(self, input_x, ct):
         self.conv1_7x7_s2 = Conv2D(kernel_size=(7,7), filters=64, strides=2, padding='same', 
-                            data_format='channels_first', trainable=ct, name='conv1_7x7_s2')
+                            data_format=self.DATA_FORMAT, trainable=ct, name='conv1_7x7_s2')
 
         self.conv1_7x7_s2_bn = BatchNormalization(axis=1, trainable=ct, name='conv1_7x7_s2_bn')
 
         self.pool1_3x3_s2 = MaxPooling2D(pool_size=3, strides=2, padding='same', 
-                                  data_format='channels_first', name='pool1_3x3_s2')
+                                  data_format=self.DATA_FORMAT, name='pool1_3x3_s2')
         
         self.conv2_3x3_reduce = Conv2D(kernel_size=1, filters=64, trainable=ct, 
-                                       data_format='channels_first', name='conv2_3x3_reduce')
+                                       data_format=self.DATA_FORMAT, name='conv2_3x3_reduce')
         
         self.conv2_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, name='conv2_3x3_reduce_bn')
         
         self.conv2_3x3 = Conv2D(kernel_size=3, filters=192, padding='same', 
-                                data_format='channels_first', trainable=ct, name='conv2_3x3')
+                                data_format=self.DATA_FORMAT, trainable=ct, name='conv2_3x3')
         
         self.conv2_3x3_bn = BatchNormalization(axis=1, trainable=ct, name='conv2_3x3_bn')
         
         self.pool2_3x3_s2 = MaxPooling2D(pool_size=3, strides=2, padding='same', 
-                                         data_format='channels_first', name='pool2_3x3_s2')
+                                         data_format=self.DATA_FORMAT, name='pool2_3x3_s2')
 
         x = tf.reshape(input_x, (-1, 3, 224, 224))
         x = self.conv1_7x7_s2(x)
@@ -104,30 +105,30 @@ class EcoModel():
 
 
     def inception_block_3a(self, x, ct):
-        self.inception_3a_1x1 = Conv2D(kernel_size=1, filters=64, data_format='channels_first', trainable=ct, 
+        self.inception_3a_1x1 = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, trainable=ct, 
                                        name='inception_3a_1x1')
         self.inception_3a_1x1_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_1x1_bn')
-        self.inception_3a_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format='channels_first', trainable=ct,
+        self.inception_3a_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, trainable=ct,
                                               name='inception_3a_3x3_reduce')
         self.inception_3a_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_3x3_reduce_bn')
-        self.inception_3a_3x3 = Conv2D(kernel_size=3, filters=64, padding='same', data_format='channels_first', 
+        self.inception_3a_3x3 = Conv2D(kernel_size=3, filters=64, padding='same', data_format=self.DATA_FORMAT, 
                                        trainable=ct, name='inception_3a_3x3')
         self.inception_3a_3x3_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_3x3_bn')
-        self.inception_3a_double_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format='channels_first', 
+        self.inception_3a_double_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, 
                                                      trainable=ct, name='inception_3a_double_3x3_reduce')
         self.inception_3a_double_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, 
                                                                     name='inception_3a_double_3x3_reduce_bn')
         self.inception_3a_double_3x3_1 = Conv2D(kernel_size=3, filters=96, padding='same', 
-                                                data_format='channels_first', trainable=ct, 
+                                                data_format=self.DATA_FORMAT, trainable=ct, 
                                                 name='inception_3a_double_3x3_1')
         self.inception_3a_double_3x3_1_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_double_3x3_1_bn')
         self.inception_3a_double_3x3_2 = Conv2D(kernel_size=3, filters=96, padding='same', 
-                                                data_format='channels_first', trainable=ct, 
+                                                data_format=self.DATA_FORMAT, trainable=ct, 
                                                 name='inception_3a_double_3x3_2')
         self.inception_3a_double_3x3_2_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_double_3x3_2_bn')
-        self.inception_3a_pool = MaxPooling2D(pool_size=3, strides=1, padding='same', data_format='channels_first', 
+        self.inception_3a_pool = MaxPooling2D(pool_size=3, strides=1, padding='same', data_format=self.DATA_FORMAT, 
                                               name='inception_3a_pool')
-        self.inception_3a_pool_proj = Conv2D(kernel_size=1, filters=32, data_format='channels_first', trainable=ct,
+        self.inception_3a_pool_proj = Conv2D(kernel_size=1, filters=32, data_format=self.DATA_FORMAT, trainable=ct,
                                              name='inception_3a_pool_proj')
         self.inception_3a_pool_proj_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3a_pool_proj_bn')
 
@@ -162,28 +163,28 @@ class EcoModel():
 
 
     def inception_block_3b(self, x, ct):
-        self.inception_3b_1x1 = Conv2D(kernel_size=1, filters=64, data_format='channels_first', trainable=ct, 
+        self.inception_3b_1x1 = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, trainable=ct, 
                                        name='inception_3b_1x1')
         self.inception_3b_1x1_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_1x1_bn')
-        self.inception_3b_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format='channels_first', trainable=ct,
+        self.inception_3b_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, trainable=ct,
                                               name='inception_3b_3x3_reduce')
         self.inception_3b_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_3x3_reduce_bn')
-        self.inception_3b_3x3 = Conv2D(kernel_size=3, filters=96, padding='same', data_format='channels_first', 
+        self.inception_3b_3x3 = Conv2D(kernel_size=3, filters=96, padding='same', data_format=self.DATA_FORMAT, 
                                        trainable=ct, name='inception_3b_3x3')
         self.inception_3b_3x3_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_3x3_bn')
-        self.inception_3b_double_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format='channels_first', 
+        self.inception_3b_double_3x3_reduce = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, 
                                                      trainable=ct, name='inception_3b_double_3x3_reduce')
         self.inception_3b_double_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, 
                                                                     name='inception_3b_double_3x3_reduce_bn')
-        self.inception_3b_double_3x3_1 = Conv2D(kernel_size=3, filters=96, padding='same', data_format='channels_first', 
+        self.inception_3b_double_3x3_1 = Conv2D(kernel_size=3, filters=96, padding='same', data_format=self.DATA_FORMAT, 
                                                 trainable=ct, name='inception_3b_double_3x3_1')
         self.inception_3b_double_3x3_1_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_double_3x3_1_bn')
-        self.inception_3b_double_3x3_2 = Conv2D(kernel_size=3, filters=96, padding='same', data_format='channels_first', 
+        self.inception_3b_double_3x3_2 = Conv2D(kernel_size=3, filters=96, padding='same', data_format=self.DATA_FORMAT, 
                                                 trainable=ct, name='inception_3b_double_3x3_2')
         self.inception_3b_double_3x3_2_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_double_3x3_2_bn')
-        self.inception_3b_pool = MaxPooling2D(pool_size=3, strides=1, padding='same', data_format='channels_first', 
+        self.inception_3b_pool = MaxPooling2D(pool_size=3, strides=1, padding='same', data_format=self.DATA_FORMAT, 
                                               name='inception_3b_pool')
-        self.inception_3b_pool_proj = Conv2D(kernel_size=1, filters=64, data_format='channels_first', trainable=ct, 
+        self.inception_3b_pool_proj = Conv2D(kernel_size=1, filters=64, data_format=self.DATA_FORMAT, trainable=ct, 
                                              name='inception_3b_pool_proj')
         self.inception_3b_pool_proj_bn = BatchNormalization(axis=1, trainable=ct, name='inception_3b_pool_proj_bn')
 
@@ -219,11 +220,11 @@ class EcoModel():
 
     def inception_block_3c(self, x, ct):
         self.inception_3c_double_3x3_reduce = Conv2D(kernel_size=1, filters=64, padding='valid', 
-                                                     data_format='channels_first', trainable=ct, 
+                                                     data_format=self.DATA_FORMAT, trainable=ct, 
                                                      name='inception_3c_double_3x3_reduce')
         self.inception_3c_double_3x3_reduce_bn = BatchNormalization(axis=1, trainable=ct, 
                                                                     name='inception_3c_double_3x3_reduce_bn')
-        self.inception_3c_double_3x3_1 = Conv2D(kernel_size=3, filters=96, padding='same', data_format='channels_first', 
+        self.inception_3c_double_3x3_1 = Conv2D(kernel_size=3, filters=96, padding='same', data_format=self.DATA_FORMAT, 
                                                 trainable=ct, name='inception_3c_double_3x3_1')
         self.inception_3c_double_3x3_1_bn = BatchNormalization(axis=1, trainable=ct, 
                                                                name='inception_3c_double_3x3_1_bn')
@@ -252,13 +253,13 @@ class EcoModel():
 
     def res3_block(self, x, ct):
         self.res3a_2 = Conv3D(kernel_size=3, filters=128, strides=1, padding='same', 
-                               data_format='channels_first', trainable=ct, name='res3a_2')
+                               data_format=self.DATA_FORMAT, trainable=ct, name='res3a_2')
         self.res3a_bn = BatchNormalization(axis=1, trainable=ct, name='res3a_bn')
         self.res3b_1 = Conv3D(kernel_size=3, filters=128, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res3b_1')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res3b_1')
         self.res3b_1_bn = BatchNormalization(axis=1, trainable=ct, name='res3b_1_bn')
         self.res3b_2 = Conv3D(kernel_size=3, filters=128, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res3b_2')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res3b_2')
         self.res3b_bn = BatchNormalization(axis=1, trainable=ct, name='res3b_bn')
         
         x1 = self.res3a_2(x)
@@ -278,18 +279,18 @@ class EcoModel():
 
     def res4_block(self, x, ct):
         self.res4a_1 = Conv3D(kernel_size=3, filters=256, strides=2, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res4a_1')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res4a_1')
         self.res4a_1_bn = BatchNormalization(axis=1, trainable=ct, name='res4a_1_bn')
         self.res4a_2 = Conv3D(kernel_size=3, filters=256, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res4a_2')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res4a_2')
         self.res4a_down = Conv3D(kernel_size=3, filters=256, strides=2, padding='same', 
-                                 data_format='channels_first', trainable=ct, name='res4a_down')
+                                 data_format=self.DATA_FORMAT, trainable=ct, name='res4a_down')
         self.res4a_bn = BatchNormalization(axis=1, trainable=ct, name='res4a_bn')
         self.res4b_1 = Conv3D(kernel_size=3, filters=256, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res4b_1')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res4b_1')
         self.res4b_1_bn = BatchNormalization(axis=1, trainable=ct, name='res4b_1_bn')
         self.res4b_2 = Conv3D(kernel_size=3, filters=256, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res4b_2')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res4b_2')
         self.res4b_bn = BatchNormalization(axis=1, trainable=ct, name='res4b_bn')
 
         x1 = self.res4a_1(x)
@@ -315,18 +316,18 @@ class EcoModel():
 
     def res5_block(self, x, ct):
         self.res5a_1 = Conv3D(kernel_size=3, filters=512, strides=2, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res5a_1')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res5a_1')
         self.res5a_1_bn = BatchNormalization(axis=1, trainable=ct, name='res5a_1_bn')
         self.res5a_2 = Conv3D(kernel_size=3, filters=512, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res5a_2')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res5a_2')
         self.res5a_down = Conv3D(kernel_size=3, filters=512, strides=2, padding='same', 
-                                 data_format='channels_first', trainable=ct, name='res5a_down')
+                                 data_format=self.DATA_FORMAT, trainable=ct, name='res5a_down')
         self.res5a_bn = BatchNormalization(axis=1, trainable=ct, name='res5a_bn')
         self.res5b_1 = Conv3D(kernel_size=3, filters=512, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res5b_1')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res5b_1')
         self.res5b_1_bn = BatchNormalization(axis=1, trainable=ct, name='res5b_1_bn')
         self.res5b_2 = Conv3D(kernel_size=3, filters=512, strides=1, padding='same', 
-                              data_format='channels_first', trainable=ct, name='res5b_2')
+                              data_format=self.DATA_FORMAT, trainable=ct, name='res5b_2')
         self.res5b_bn = BatchNormalization(axis=1, trainable=ct, name='res5b_bn')
 
         x1 = self.res5a_1(x)
