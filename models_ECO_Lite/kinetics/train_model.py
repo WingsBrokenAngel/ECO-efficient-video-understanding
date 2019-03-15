@@ -27,7 +27,7 @@ def train_model_global(train_video_path_file):
     # 设置训练环境
     manager = mp.Manager()
     path2video_queue = manager.Queue(2048)
-    video_queue = manager.Queue(128)
+    video_queue = manager.Queue(512)
     plist = []
     p = mp.Process(target=load_video_path, args=(path2train, path2video_queue, epoch))
     plist.append(p)
@@ -118,11 +118,11 @@ def train_model_process(model, video_queue):
         top1_list, top5_list = [], []
         for epoch_idx in range(epoch):
             for iter_idx in range(full_iters):
-                batchx, batchy = np.zeros(shape=(batch_size, frm_num, 3, 224, 224), dtype=np.float32), \
+                batchx, batchy = np.zeros(shape=(batch_size*frm_num, 3, 224, 224), dtype=np.float32), \
                                             np.zeros(shape=(batch_size,), dtype=np.int32)
                 for batch_idx in range(batch_size):
                     video_data, label = video_queue.get()
-                    batchx[batch_idx, :, :, :, :] = video_data
+                    batchx[batch_idx*frm_num:(batch_idx+1)*frm_num, :, :, :] = video_data
                     batchy[batch_idx] = label
 
                 res = sess.run([model.top1_acc, model.top5_acc, train_op], feed_dict={model.input_x: batchx, 
@@ -136,11 +136,11 @@ def train_model_process(model, video_queue):
                     top5_list.clear()
 
             if residue_examples:
-                batchx, batchy = np.zeros(shape=(residue_examples, frm_num, 3, 224, 224), dtype=np.float32), \
+                batchx, batchy = np.zeros(shape=(residue_examples*frm_num, 3, 224, 224), dtype=np.float32), \
                                                 np.zeros(shape=(residue_examples, ), dtype=np.float32)
                 for batch_idx in range(residue_examples):
                     video_data, label = video_queue.get()
-                    batchx[batch_idx,:,:,:,:] = video_data
+                    batchx[batch_idx*frm_num:(batch_idx+1)*frm_num,:,:,:] = video_data
                     batchy[batch_idx] = label
 
                 res = sess.run([model.top1_acc, model.top5_acc, train_op], feed_dict={model.input_x: batchx, 
