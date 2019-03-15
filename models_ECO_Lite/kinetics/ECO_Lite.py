@@ -234,7 +234,7 @@ class EcoModel():
 
         x = self.inception_3c_double_3x3_1(x)
         x = self.inception_3c_double_3x3_1_bn(x)
-
+        print(x)
         x = tf.nn.relu(x, name='inception_3c_relu_double_3x3_1_inp')
         x = tf.reshape(x, (-1, self.frm_num, 96, 28, 28), name='r2Dto3D')
         x = tf.transpose(x, [0, 2, 1, 3, 4])
