@@ -89,7 +89,7 @@ def train_model_process(model, video_queue):
         l2_loss = tf.reduce_sum(l2_loss_list)
         loss = model.loss + beta * l2_loss
         # Optimizer
-        global_step = tf.Variable(0)
+        global_step = tf.Variable(0, trainable=False)
         optimizer = tf.train.AdamOptimizer(learning_rate, global_step)
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
