@@ -27,7 +27,7 @@ def train_model_global(train_video_path_file):
     path2video_queue = manager.Queue()
     video_queue = manager.Queue()
     plist = []
-    p = mp.Process(targer=load_video_path, args=(path2train, path2video_queue, epoch))
+    p = mp.Process(target=load_video_path, args=(path2train, path2video_queue, epoch))
     plist.append(p)
     for idx in range(8):
         p = mp.Process(target=load_video, args=(path2video_queue, video_queue, frm_num, True, idx))
@@ -35,7 +35,7 @@ def train_model_global(train_video_path_file):
 
     model = EcoModel(cnn_trainable, batch_size)
     with model.graph.as_default():
-        p = mp.Process(target=train_model_process, args=(model, video_queue, epoch))
+        p = mp.Process(target=train_model_process, args=(model, video_queue))
         plist.append(p)
 
     for p in plist:
@@ -45,7 +45,7 @@ def train_model_global(train_video_path_file):
         p.join()
 
 
-def train_model_process(model, video_queue, epoch):
+def train_model_process(model, video_queue):
     # Loss
     with tf.variable_scope('eco', reuse=tf.AUTO_REUSE):
         kernel_list = []
