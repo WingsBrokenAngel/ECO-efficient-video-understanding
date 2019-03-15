@@ -103,7 +103,7 @@ def train_model_process(model, video_queue):
     with tf.Session(graph=model.graph, config=config) as sess:
         # 加载数据
         sess.run(model.init_op)
-        model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model')
+        model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt')
         full_iters = train_example_num // batch_size
         if train_example_num % batch_size:
             residue_examples = train_example_num % batch_size

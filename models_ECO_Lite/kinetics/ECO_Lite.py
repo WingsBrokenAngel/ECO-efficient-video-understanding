@@ -405,7 +405,7 @@ class EcoModel():
 
 
 
-    def init_weights(self, resnet, incep):
+    def init_weights(self, resnet, incep, sess):
         with tf.Session(graph=self.graph) as sess:
             self.init_conv2d_layer(self.conv1_7x7_s2, resnet, incep)
             self.init_bn_layer(self.conv1_7x7_s2_bn, resnet, incep)
@@ -475,7 +475,7 @@ class EcoModel():
             w = self.res3a_bn.get_weights()
             print('res3a_bn equal: ', np.all(w[0] == resnet['res3a_bn'][0]))
             saver = tf.train.Saver()
-            saver.save(sess, './saves/init_model.ckpt')
+            saver.save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt')
             w = self.res3a_bn.get_weights()
             print('res3a_bn equal: ', np.all(w[0] == resnet['res3a_bn'][0]))   
 
