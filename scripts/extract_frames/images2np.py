@@ -28,6 +28,7 @@ for path in train_full_path:
         imgs = []
         for img_name in img_names:
             img_full_path = os.path.join(vid_path, img_name)
+            print(img_full_path)
             img = cv2.imread(img_full_path, cv2.IMREAD_COLOR)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             imgs.append(img)
