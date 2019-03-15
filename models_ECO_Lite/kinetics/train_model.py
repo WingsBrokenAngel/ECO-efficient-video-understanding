@@ -26,8 +26,8 @@ learning_rate = 0.001
 def train_model_global(train_video_path_file):
     # 设置训练环境
     manager = mp.Manager()
-    path2video_queue = manager.Queue()
-    video_queue = manager.Queue()
+    path2video_queue = manager.Queue(2048)
+    video_queue = manager.Queue(128)
     plist = []
     p = mp.Process(target=load_video_path, args=(path2train, path2video_queue, epoch))
     plist.append(p)
