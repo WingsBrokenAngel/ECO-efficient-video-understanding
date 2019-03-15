@@ -143,3 +143,9 @@ def train_model_process(model, video_queue, epoch):
 
 
 
+def main():
+    train_model_global(path2train)
+
+
+if __name__ == "__main__":
+    main()
