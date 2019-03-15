@@ -28,7 +28,6 @@ class EcoModel():
                 self.input_y = tf.placeholder(dtype=tf.int32, shape=(None,), name='input_y')
                 self.construct_model(self.input_x, self.input_y)
                 #self.initialize_model()
-                self.init_op = tf.global_variables_initializer()
 
     def construct_model(self, input_x, input_y):
         ct = self.cnn_trainable
@@ -405,7 +404,7 @@ class EcoModel():
 
 
 
-    def init_weights(self, resnet, incep, sess):
+    def init_weights(self, resnet, incep, sess, saver):
         self.init_conv2d_layer(self.conv1_7x7_s2, resnet, incep)
         self.init_bn_layer(self.conv1_7x7_s2_bn, resnet, incep)
         self.init_conv2d_layer(self.conv2_3x3_reduce, resnet, incep)
@@ -478,8 +477,7 @@ class EcoModel():
         w = self.res3a_bn.get_weights()
         print('res3a_bn equal: ', np.all(w[0] == resnet['res3a_bn'][0]))   
 
-    def load_save(self, sess, path2save):
-        saver = tf.train.Saver()
+    def load_save(self, sess, path2save, saver):
         saver.restore(sess, path2save)
         print('The model has been restored.')
 
