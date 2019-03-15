@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
+import os
 
 
 kinetics_path = '/home/chenhaoran/kinetics-400-video'
