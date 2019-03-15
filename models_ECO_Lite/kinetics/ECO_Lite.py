@@ -35,11 +35,13 @@ class EcoModel():
         x = self.resnet_3d_part(x, ct)
         x = AveragePooling3D(pool_size=(4, 7, 7), strides=(1, 1, 1), padding='valid', 
                              data_format='channels_first', name='global_pool')(x)
+        print(x)
         x = tf.reshape(x, shape=(-1, 512))
+        print(x)
         x = Dropout(0.3, name='dropout')(x)
         self.fc8 = Dense(400, trainable=ct, name='fc8')
         x = self.fc8(x)
-
+        print(x)
         self.loss = sparse_softmax_cross_entropy_with_logits(logits=x, labels=self.input_y)
 
         self.top1_acc = in_top_k(predictions=x, targets=self.input_y, k=1)
