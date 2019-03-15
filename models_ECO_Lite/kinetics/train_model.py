@@ -137,7 +137,7 @@ def train_model_process(model, video_queue):
 
             if residue_examples:
                 batchx, batchy = np.zeros(shape=(residue_examples*frm_num, 3, 224, 224), dtype=np.float32), \
-                                                np.zeros(shape=(residue_examples, ), dtype=np.float32)
+                                                np.zeros(shape=(residue_examples, ), dtype=np.int32)
                 for batch_idx in range(residue_examples):
                     video_data, label = video_queue.get()
                     batchx[batch_idx*frm_num:(batch_idx+1)*frm_num,:,:,:] = video_data
