@@ -24,8 +24,8 @@ class EcoModel():
         self.frm_num = frm_num
         with self.graph.as_default():
             with tf.variable_scope('eco', reuse=tf.AUTO_REUSE):
-                self.input_x = tf.placeholder(dtype=tf.float32, shape=(None, 3, 224, 224))
-                self.input_y = tf.placeholder(dtype=tf.int32, shape=(None,))
+                self.input_x = tf.placeholder(dtype=tf.float32, shape=(None, 3, 224, 224), name='input_x')
+                self.input_y = tf.placeholder(dtype=tf.int32, shape=(None,), name='input_y')
                 self.construct_model(self.input_x, self.input_y)
                 #self.initialize_model()
                 self.init_op = tf.global_variables_initializer()
