@@ -28,6 +28,7 @@ def create_list(action_map, split):
         for vid in vid_list:
             full_vid_path = os.path.join(full_dir_path, vid)
             vid_pics = os.listdir(full_vid_path)
+            vid_pics = [v for v in vid_pics if len(v) > 4 and v[-4:] != '.npy']
             pic_num = len(vid_pics)
             if pic_num >= 12:
                 fileObj_trainList.write('%s %d %d\n'%(full_vid_path, pic_num, label))
