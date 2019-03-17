@@ -43,7 +43,7 @@ class EcoModel():
         self.fc8 = Dense(400, trainable=ct, name='fc8')
         self.fc8_output = self.fc8(x)
         print(self.fc8_output)
-        self.loss = sparse_softmax_cross_entropy_with_logits(logits=x, labels=self.input_y)
+        self.loss = sparse_softmax_cross_entropy_with_logits(logits=self.fc8_output, labels=self.input_y)
 
         self.top1_acc = in_top_k(predictions=self.fc8_output, targets=self.input_y, k=1)
         self.top1_acc = tf.reduce_mean(tf.cast(self.top1_acc, tf.float32), name='top1_accuracy')
