@@ -10,6 +10,9 @@ save_path = '/home/chenhaoran/kinetics-400-npy'
 
 
 def move_npy_files(dataset_path, save_path):
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+
     classes_path = glob.glob(os.path.join(dataset_path, '*'))
 
     for class_path in classes_path:
