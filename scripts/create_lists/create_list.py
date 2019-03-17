@@ -35,7 +35,7 @@ def create_list(action_map, split):
             if pic_num >= 12:
                 npy_path = os.path.join('/home/chenhaoran/kinetics-400-npy', split, d, vid + '.npy')
                 if os.path.exists(npy_path):
-                    fileObj_trainList.write('%s %d %d\n'%(full_vid_path, pic_num, label))
+                    fileObj_trainList.write('%s %d %d\n'%(npy_path, pic_num, label))
                     success_cnt += 1
                 else:
                     fail_cnt += 1
