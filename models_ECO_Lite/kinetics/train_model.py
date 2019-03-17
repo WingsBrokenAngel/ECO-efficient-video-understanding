@@ -35,7 +35,7 @@ def train_model_global(train_video_path_file):
         p = mp.Process(target=load_video, args=(path2video_queue, video_queue, frm_num, True, idx))
         plist.append(p)
 
-    model = EcoModel(cnn_trainable, frm_num)
+    model = EcoModel('channels_first', cnn_trainable, frm_num)
     p = mp.Process(target=train_model_process, args=(model, video_queue))
     plist.append(p)
 
