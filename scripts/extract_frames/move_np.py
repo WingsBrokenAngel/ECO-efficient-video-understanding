@@ -30,3 +30,7 @@ def move_npy_files(dataset_path, save_path):
 def main():
     move_npy_files('/home/chenhaoran/kinetics-400-video/train_frm', '/home/chenhaoran/kinetics-400-npy/train')
     move_npy_files('/home/chenhaoran/kinetics-400-video/val_frm', '/home/chenhaoran/kinetics-400-npy/val')
+
+
+if __name__ == "__main__":
+    main()
