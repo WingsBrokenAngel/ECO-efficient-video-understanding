@@ -36,7 +36,8 @@ def load_one_video(path2video, num_frm, sample_size, is_train=True):
     '''
     frm_idx = np.random.choice(np.arange(num_frm), size=sample_size)
     frm_idx.sort()
-    vid = np.load(os.path.join(path2video, 'imgs.npy'))
+
+    vid = np.load(path2video)
     images = vid[frm_idx].astype(np.float32) / 255.
     processed = []
     for idx in range(sample_size):
