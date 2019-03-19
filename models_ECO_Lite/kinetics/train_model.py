@@ -12,10 +12,11 @@ from pprint import pprint
 import pickle
 
 
-batch_size = 4
+batch_size = 2
 cnn_trainable = True
 path2train = '/home/chenhaoran/ECO-efficient-video-understanding/Kinetics400_rgb_train.txt'
-train_example_num = 229435
+train_example_num = 228145
+val_example_num = 18762
 epoch = 10
 frm_num = 32
 beta = 0.0005# l2 loss parameter
