@@ -12,7 +12,7 @@ from pprint import pprint
 import pickle
 
 
-batch_size = 8
+batch_size = 4
 cnn_trainable = True
 path2train = '/home/chenhaoran/ECO-efficient-video-understanding/Kinetics400_rgb_train.txt'
 train_example_num = 229435
@@ -35,7 +35,7 @@ def train_model_global(train_video_path_file):
         p = mp.Process(target=load_video, args=(path2video_queue, video_queue, frm_num, True, idx))
         plist.append(p)
 
-    model = EcoModel(cnn_trainable, frm_num)
+    model = EcoModel('channels_first', cnn_trainable, frm_num)
     p = mp.Process(target=train_model_process, args=(model, video_queue))
     plist.append(p)
 
@@ -93,8 +93,11 @@ def train_model_process(model, video_queue):
         global_step = tf.Variable(0, trainable=False)
         optimizer = tf.train.AdamOptimizer(learning_rate, global_step)
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        trainable_variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        pprint(trainable_variables)
         with tf.control_dependencies(update_ops):
-            grads_vars = optimizer.compute_gradients(loss, tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
+            grads_vars = optimizer.compute_gradients(loss, trainable_variables)
+            pprint(grads_vars)
             grads_vars = [(tf.clip_by_norm(gv[0], gradient_bound), gv[1]) for gv in grads_vars]
             train_op = optimizer.apply_gradients(grads_vars)
         # Configuration
@@ -104,10 +107,10 @@ def train_model_process(model, video_queue):
         init_op = tf.global_variables_initializer()
     with tf.Session(graph=model.graph, config=config) as sess:
         # 加载数据
-        incep = pickle.load(open("/home/chenhaoran/inception_weights_py3.pkl" ,"rb"))
-        res = pickle.load(open("/home/chenhaoran/res3dnet_weights_py3.pkl", "rb"))
+        # incep = pickle.load(open("/home/chenhaoran/inception_weights_py3.pkl" ,"rb"))
+        # res = pickle.load(open("/home/chenhaoran/res3dnet_weights_py3.pkl", "rb"))
         sess.run(init_op)
-        model.init_weights(res, incep, sess, saver)
+        # model.init_weights(res, incep, sess, saver)
         model.load_save(sess, '/home/chenhaoran/ECO-efficient-video-understanding/saves/init_model.ckpt', saver)
         full_iters = train_example_num // batch_size
         if train_example_num % batch_size:
