@@ -37,7 +37,7 @@ def load_one_video(path2video, num_frm, sample_size, is_train=True):
     frm_idx = np.random.choice(np.arange(num_frm), size=sample_size)
     frm_idx.sort()
     vid = np.load(os.path.join(path2video, 'imgs.npy'))
-    images = vid[frm_idx].astype(np.float32) / 255.
+    images = vid[frm_idx].astype(np.float32) - np.array([104., 117., 123.], dtype=np.float32)
     processed = []
     for idx in range(sample_size):
         if is_train:
